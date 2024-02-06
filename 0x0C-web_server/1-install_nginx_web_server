@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# A script that install nginx on server
+
+# Update Ubuntu and install Nginx
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+# Start the Nginx service
+sudo service nginx start
+
+# Allow Nginx through the firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Create an index.html file
+echo 'Hello World!' | sudo tee /var/www/html/index.html

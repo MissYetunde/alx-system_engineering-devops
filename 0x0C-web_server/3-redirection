@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# A# Configure your Nginx server so that /redirect_me is redirecting to another page
+
+# Update Ubuntu and install Nginx
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+# Start the Nginx service
+sudo service nginx start
+
+# Allow Nginx through the firewall
+sudo ufw allow 'Nginx HTTP'
+
+
+# Create an index.html file
+echo 'Hello World!' | sudo tee /var/www/html/index.html
+
+new_string="\tserver_name _;\n \trewrite ^/redirect_me$ http://x.com permanent;\n \trewrite ^/redirect_me/$ http://x.com permanent; "
+sudo sed -i "s|^[^#].*server_name.*;|$new_string|" /etc/nginx/sites-enabled/default;
+
+# Restart Nginx service
+sudo service nginx restart
