@@ -1,0 +1,6 @@
+# ~/.ssh/config
+
+Host ubuntu@35.153.192.216
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
+    PreferredAuthentications publickey
