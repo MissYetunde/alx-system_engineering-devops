@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# A script to configure HAproxy on load balancer server
+
+# Install HAProxy
+#sudo apt-get -y install --no-install-recommends software-properties-common
+#sudo add-apt-repository -y ppa:vbernat/haproxy-2.8
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
+#sudo apt-get -y install haproxy=2.8.\*
+
+
+# Configure HAProxy
+# Define the frontend and backend configuration
+frontend_config="frontend web\n\tbind *:80\n\tmode http\n\tdefault_backend servers"
+backend_config="backend servers\n\tbalance roundrobin\n\tserver 289442-web-01 18.204.13.162:80 check\n\tserver 289442-web-02 54.85.22.182:80 check"
+
+#frontend_config="listen load_balancer\n\tbind *:80\n\tbalance roundrobin\n\tmode http\n\toption httpclose\n\toption forwardfor"
+#backend_config="\n\tserver 289442-web-01 18.204.13.162:80 check\n\tserver 289442-web-02 100.25.134.87:80 check"
+
+
+# Stop HAProxy service before making changes to haproxy.cfg
+sudo service haproxy stop
+
+# Add the frontend and backend configuration to the existing HAProxy configuration
+sudo bash -c "echo -e '$frontend_config' >> /etc/haproxy/haproxy.cfg"
+sudo bash -c "echo -e '$backend_config' >> /etc/haproxy/haproxy.cfg"
+
+# Enable HAproxy using init
+sudo echo "ENABLE=1" | sudo tee -a /etc/default/haproxy
+# Restart HAProxy services
+sudo service haproxy restart
+
+# Ensure HAProxy can be managed via init script
+#sudo systemctl enable haproxy
+#sudo systemctl restart haproxy

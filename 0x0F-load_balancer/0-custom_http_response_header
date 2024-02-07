@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Configure Nginx so that its HTTP response contains a custom header
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on
+
+# Installing Nginx on server
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+# Allow Nginx through the firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Add previous configurations
+#echo "Hello World!" > /var/www/html/index.html
+#echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+
+# Redirecting a specific page
+#new_string="\tserver_name _;\n \trewrite ^/redirect_me/$ http://x.com permanent;\n \trewrite ^/redirect_me$ http://x.com permanent; "
+#sudo sed -i "s|^[^#].*server_name.*;|$new_string|" /etc/nginx/sites-available/default;
+
+# Directing 404 error to custom page
+#rep_str="\terror_page 404 /404.html;\n \tlocation = /404.html {\n \t\troot /var/www/html;\n \t\tinternal;"
+#sudo sed -i "s|^[^#].*location \/ {$|$rep_str|" /etc/nginx/sites-available/default;
+
+#try_str="\t\t# try_files \$uri \$uri =404;"
+#sudo sed -i "s/^.*[^#]try_files.*/$try_str/" /etc/nginx/sites-available/default;
+
+custom_header_config="\tadd_header X-Served-By \$hostname;"
+
+# Stop nginx service before making changes
+sudo service nginx stop
+
+# Insert the custom header configuration after the listen directives
+#sudo sed -i "/^ *listen \[::\]:80 default_server;/ { s|$|\\n$custom_header_config|; }" /etc/nginx/sites-available/default
+sudo sed -i "/listen \[::\]:80 default_server;/a \\\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
+
+# Restart Nginx to apply changes
+sudo service nginx restart
