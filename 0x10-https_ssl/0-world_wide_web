@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# a Bash script that will display information about subdomains.
+
+
+if [ "$#" -eq 1 ]; then
+    domain="$1"
+    for subdomain in www lb-01 web-01 web-02; do
+        ip_address=$(dig +short "$subdomain.$domain")
+        record_type=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION' | awk 'NR==2 {print $4}')
+        echo "The subdomain $subdomain is a $record_type record and points to $ip_address"
+    done
+elif [ "$#" -eq 2 ]; then
+    domain="$1"
+    subdomain="$2"
+
+    case "$subdomain" in
+        www | lb-01 | web-01 | web-02)
+            ip_address=$(dig +short "$subdomain.$domain")
+            record_type=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION' | awk 'NR==2 {print $4}')
+            echo "The subdomain $subdomain is a $record_type record and points to $ip_address"
+            ;;
+        *)
+    esac
+fi
